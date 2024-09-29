@@ -70,6 +70,7 @@
 
     // Object to store file contents
     const filesContent = {};
+    let currentFileName = null; // To keep track of the currently active file
 
     // Load files from localStorage when the page loads
     window.onload = function() {
@@ -102,6 +103,7 @@
 
         // Set up click event to load file content
         li.onclick = function() {
+            saveCurrentFile(); // Save the current file's content before switching
             loadFileContent(fileName);
         };
 
@@ -111,6 +113,7 @@
     function loadFileContent(fileName) {
         // Load the file content into the textarea
         htmlCode.value = filesContent[fileName];
+        currentFileName = fileName; // Update the current file name
         updatePreview(); // Update the preview
     }
 
@@ -120,10 +123,16 @@
         previewFrame.srcdoc = content;
 
         // Save the current content to the currently selected file (if any)
-        const selectedFile = [...filesList.children].find(li => li.textContent === htmlCode.value);
-        if (selectedFile) {
-            filesContent[selectedFile.textContent] = content; // Update content in filesContent
-            saveToLocalStorage(selectedFile.textContent, content); // Save to localStorage
+        if (currentFileName) {
+            filesContent[currentFileName] = content; // Update content in filesContent
+            saveToLocalStorage(currentFileName, content); // Save to localStorage
+        }
+    }
+
+    function saveCurrentFile() {
+        if (currentFileName) {
+            filesContent[currentFileName] = htmlCode.value; // Save content to the current file
+            saveToLocalStorage(currentFileName, htmlCode.value); // Save to localStorage
         }
     }
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online File Manager & HTML Editor</title>
+    <title>Short HTML Editor (SHE)</title>
     <style>
         body {
             display: flex;
@@ -24,7 +24,7 @@
         }
         textarea {
             width: 100%;
-            height: calc(100vh - 60px);
+            height: calc(100vh - 120px);
             border: none;
             font-family: monospace;
             font-size: 16px;
@@ -33,71 +33,45 @@
         button {
             margin-top: 10px;
         }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
     </style>
 </head>
 <body>
 
 <div id="file-list">
     <h3>Files</h3>
-    <ul id="files">
-        <li><a href="#" onclick="loadFile('html/example1.html')">example1.html</a></li>
-        <li><a href="#" onclick="loadFile('html/example2.css')">example2.css</a></li>
-        <li><a href="#" onclick="loadFile('html/example3.js')">example3.js</a></li>
-        <!-- Add more files as needed -->
-    </ul>
-    <button onclick="saveToLocalStorage()">Save</button>
-    <button onclick="createFile()">Create New File</button>
+    <ul id="files"></ul>
+    <button onclick="nameFile()">Name a File</button>
 </div>
 
 <div id="editor">
-    <textarea id="html-code" placeholder="Write your HTML code here..."></textarea>
+    <textarea id="html-code" placeholder="Write your code here..."></textarea>
 </div>
 
 <script>
     const htmlCode = document.getElementById('html-code');
-    const localStorageKey = 'savedHtmlCode';
+    const filesList = document.getElementById('files');
 
-    // Load saved code from localStorage on page load
-    window.onload = function() {
-        const savedCode = localStorage.getItem(localStorageKey);
-        if (savedCode) {
-            htmlCode.value = savedCode;
-        }
-    };
-
-    function loadFile(file) {
-        fetch(file)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('File not found');
-                }
-                return response.text();
-            })
-            .then(data => {
-                htmlCode.value = data;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
-
-    function saveToLocalStorage() {
-        localStorage.setItem(localStorageKey, htmlCode.value);
-        alert('Changes saved locally!');
-    }
-
-    function createFile() {
+    function nameFile() {
         const fileName = prompt("Enter the file name (with extension, e.g., myfile.html):");
         if (fileName) {
-            const blob = new Blob([htmlCode.value], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url); // Clean up the URL.createObjectURL
+            const validExtensions = ['html', 'css', 'js', 'png', 'gif', 'mp4', 'jpeg'];
+            const fileExtension = fileName.split('.').pop();
+            if (validExtensions.includes(fileExtension.toLowerCase())) {
+                // Create a new list item
+                const li = document.createElement('li');
+                li.textContent = fileName;
+                li.onclick = function() {
+                    htmlCode.value = ''; // Clear the textarea
+                    // Here you can implement functionality to load the specific file if needed
+                };
+                filesList.appendChild(li);
+            } else {
+                alert('Invalid file extension. Please use one of the following: ' + validExtensions.join(', '));
+            }
         }
     }
 </script>

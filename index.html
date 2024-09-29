@@ -67,32 +67,45 @@
     const htmlCode = document.getElementById('html-code');
     const filesList = document.getElementById('files');
     const previewFrame = document.getElementById('preview-frame');
-    
+
     // Object to store file contents
     const filesContent = {};
+
+    // Load files from localStorage when the page loads
+    window.onload = function() {
+        const storedFiles = JSON.parse(localStorage.getItem('sheFiles')) || {};
+        Object.keys(storedFiles).forEach(fileName => {
+            addFileToList(fileName, storedFiles[fileName]);
+        });
+    };
 
     function nameFile() {
         const fileName = prompt("Enter the file name (with extension, e.g., myfile.html):");
         if (fileName) {
             const validExtensions = ['html', 'css', 'js', 'png', 'gif', 'mp4', 'jpeg'];
             const fileExtension = fileName.split('.').pop();
-            if (validExtensions.includes(fileExtension.toLowerCase())) {
+            if (validExtensions.includes(fileExtension.toLowerCase()) && !filesContent[fileName]) {
                 // Create a new list item
-                const li = document.createElement('li');
-                li.textContent = fileName;
-                
-                // Set up click event to load file content
-                li.onclick = function() {
-                    loadFileContent(fileName);
-                };
-
-                // Store an empty content for the new file
-                filesContent[fileName] = '';
-                filesList.appendChild(li);
+                addFileToList(fileName, '');
+                // Save to localStorage
+                saveToLocalStorage(fileName, '');
             } else {
-                alert('Invalid file extension. Please use one of the following: ' + validExtensions.join(', '));
+                alert('Invalid file extension or file already exists. Please use one of the following: ' + validExtensions.join(', '));
             }
         }
+    }
+
+    function addFileToList(fileName, content) {
+        filesContent[fileName] = content;
+        const li = document.createElement('li');
+        li.textContent = fileName;
+
+        // Set up click event to load file content
+        li.onclick = function() {
+            loadFileContent(fileName);
+        };
+
+        filesList.appendChild(li);
     }
 
     function loadFileContent(fileName) {
@@ -110,7 +123,14 @@
         const selectedFile = [...filesList.children].find(li => li.textContent === htmlCode.value);
         if (selectedFile) {
             filesContent[selectedFile.textContent] = content; // Update content in filesContent
+            saveToLocalStorage(selectedFile.textContent, content); // Save to localStorage
         }
+    }
+
+    function saveToLocalStorage(fileName, content) {
+        const storedFiles = JSON.parse(localStorage.getItem('sheFiles')) || {};
+        storedFiles[fileName] = content;
+        localStorage.setItem('sheFiles', JSON.stringify(storedFiles));
     }
 </script>
 

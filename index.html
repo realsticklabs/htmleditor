@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online HTML Editor</title>
+    <title>Online File Manager & HTML Editor</title>
     <style>
         body {
             display: flex;
@@ -11,49 +11,61 @@
             margin: 0;
             font-family: Arial, sans-serif;
         }
-        #editor {
-            width: 50%;
+        #file-list {
+            width: 20%;
             padding: 10px;
             border-right: 1px solid #ccc;
-            box-sizing: border-box;
-            height: 100%;
-            resize: none;
+            overflow-y: auto;
         }
-        #preview {
-            width: 50%;
+        #editor {
+            width: 80%;
             padding: 10px;
             box-sizing: border-box;
-            overflow-y: auto;
         }
         textarea {
             width: 100%;
-            height: 100%;
+            height: calc(100vh - 60px);
             border: none;
             font-family: monospace;
             font-size: 16px;
+            resize: none;
         }
     </style>
 </head>
 <body>
 
+<div id="file-list">
+    <h3>Files</h3>
+    <ul id="files">
+        <li><a href="#" onclick="loadFile('html/example1.html')">example1.html</a></li>
+        <li><a href="#" onclick="loadFile('html/example2.css')">example2.css</a></li>
+        <li><a href="#" onclick="loadFile('html/example3.js')">example3.js</a></li>
+        <!-- Add more files as needed -->
+    </ul>
+</div>
+
 <div id="editor">
     <textarea id="html-code" placeholder="Write your HTML code here..."></textarea>
-</div>
-<div id="preview">
-    <h3>Preview:</h3>
-    <iframe id="output" style="width:100%; height:90%; border:none;"></iframe>
 </div>
 
 <script>
     const htmlCode = document.getElementById('html-code');
-    const output = document.getElementById('output');
 
-    htmlCode.addEventListener('input', () => {
-        const doc = output.contentDocument || output.contentWindow.document;
-        doc.open();
-        doc.write(htmlCode.value);
-        doc.close();
-    });
+    function loadFile(file) {
+        fetch(file)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('File not found');
+                }
+                return response.text();
+            })
+            .then(data => {
+                htmlCode.value = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
 </script>
 
 </body>

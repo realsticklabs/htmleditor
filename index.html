@@ -52,6 +52,7 @@
     <h3>Files</h3>
     <ul id="files"></ul>
     <button onclick="nameFile()">Name a File</button>
+    <button onclick="downloadFile()">Download Current File</button> <!-- Download button -->
 </div>
 
 <div id="editor">
@@ -133,6 +134,23 @@
         if (currentFileName) {
             filesContent[currentFileName] = htmlCode.value; // Save content to the current file
             saveToLocalStorage(currentFileName, htmlCode.value); // Save to localStorage
+        }
+    }
+
+    function downloadFile() {
+        if (currentFileName) {
+            const content = filesContent[currentFileName];
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = currentFileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); // Release the object URL
+        } else {
+            alert('No file selected for download!');
         }
     }
 

@@ -32,12 +32,18 @@
             font-family: monospace;
             font-size: 16px;
         }
+        #error {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
 <div id="editor">
     <textarea id="html-code" placeholder="Write your HTML code here..."></textarea>
+    <div id="error"></div>
 </div>
 <div id="preview">
     <h3>Preview:</h3>
@@ -47,12 +53,33 @@
 <script>
     const htmlCode = document.getElementById('html-code');
     const output = document.getElementById('output');
+    const errorDiv = document.getElementById('error');
 
     htmlCode.addEventListener('input', () => {
+        const code = htmlCode.value;
         const doc = output.contentDocument || output.contentWindow.document;
-        doc.open();
-        doc.write(htmlCode.value);
-        doc.close();
+
+        // Clear previous errors
+        errorDiv.textContent = '';
+
+        // Parse the HTML
+        const parser = new DOMParser();
+        const parsedDoc = parser.parseFromString(code, 'text/html');
+
+        // Check for parsing errors
+        const errors = parsedDoc.getElementsByTagName('parsererror');
+        if (errors.length > 0) {
+            errorDiv.textContent = 'Error: ' + errors[0].textContent.trim();
+        } else {
+            // Update the preview if there are no errors
+            try {
+                doc.open();
+                doc.write(code);
+                doc.close();
+            } catch (error) {
+                errorDiv.textContent = 'Error: ' + error.message;
+            }
+        }
     });
 </script>
 

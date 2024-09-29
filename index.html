@@ -67,6 +67,9 @@
     const htmlCode = document.getElementById('html-code');
     const filesList = document.getElementById('files');
     const previewFrame = document.getElementById('preview-frame');
+    
+    // Object to store file contents
+    const filesContent = {};
 
     function nameFile() {
         const fileName = prompt("Enter the file name (with extension, e.g., myfile.html):");
@@ -77,10 +80,14 @@
                 // Create a new list item
                 const li = document.createElement('li');
                 li.textContent = fileName;
+                
+                // Set up click event to load file content
                 li.onclick = function() {
-                    htmlCode.value = ''; // Clear the textarea
-                    previewFrame.srcdoc = ''; // Clear the preview
+                    loadFileContent(fileName);
                 };
+
+                // Store an empty content for the new file
+                filesContent[fileName] = '';
                 filesList.appendChild(li);
             } else {
                 alert('Invalid file extension. Please use one of the following: ' + validExtensions.join(', '));
@@ -88,10 +95,22 @@
         }
     }
 
+    function loadFileContent(fileName) {
+        // Load the file content into the textarea
+        htmlCode.value = filesContent[fileName];
+        updatePreview(); // Update the preview
+    }
+
     function updatePreview() {
         const content = htmlCode.value;
         // Update the preview iframe with the current content of the textarea
         previewFrame.srcdoc = content;
+
+        // Save the current content to the currently selected file (if any)
+        const selectedFile = [...filesList.children].find(li => li.textContent === htmlCode.value);
+        if (selectedFile) {
+            filesContent[selectedFile.textContent] = content; // Update content in filesContent
+        }
     }
 </script>
 

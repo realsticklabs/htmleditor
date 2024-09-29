@@ -46,6 +46,7 @@
         <!-- Add more files as needed -->
     </ul>
     <button onclick="saveToLocalStorage()">Save</button>
+    <button onclick="createFile()">Create New File</button>
 </div>
 
 <div id="editor">
@@ -83,6 +84,21 @@
     function saveToLocalStorage() {
         localStorage.setItem(localStorageKey, htmlCode.value);
         alert('Changes saved locally!');
+    }
+
+    function createFile() {
+        const fileName = prompt("Enter the file name (with extension, e.g., myfile.html):");
+        if (fileName) {
+            const blob = new Blob([htmlCode.value], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); // Clean up the URL.createObjectURL
+        }
     }
 </script>
 

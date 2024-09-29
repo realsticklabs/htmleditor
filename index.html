@@ -18,9 +18,16 @@
             overflow-y: auto;
         }
         #editor {
-            width: 80%;
+            width: 60%;
             padding: 10px;
             box-sizing: border-box;
+        }
+        #preview {
+            width: 40%;
+            padding: 10px;
+            box-sizing: border-box;
+            border-left: 1px solid #ccc;
+            overflow-y: auto;
         }
         textarea {
             width: 100%;
@@ -48,12 +55,18 @@
 </div>
 
 <div id="editor">
-    <textarea id="html-code" placeholder="Write your code here..."></textarea>
+    <textarea id="html-code" placeholder="Write your code here..." oninput="updatePreview()"></textarea>
+</div>
+
+<div id="preview">
+    <h3>Preview</h3>
+    <iframe id="preview-frame" style="width: 100%; height: calc(100vh - 160px); border: none;"></iframe>
 </div>
 
 <script>
     const htmlCode = document.getElementById('html-code');
     const filesList = document.getElementById('files');
+    const previewFrame = document.getElementById('preview-frame');
 
     function nameFile() {
         const fileName = prompt("Enter the file name (with extension, e.g., myfile.html):");
@@ -66,13 +79,19 @@
                 li.textContent = fileName;
                 li.onclick = function() {
                     htmlCode.value = ''; // Clear the textarea
-                    // Here you can implement functionality to load the specific file if needed
+                    previewFrame.srcdoc = ''; // Clear the preview
                 };
                 filesList.appendChild(li);
             } else {
                 alert('Invalid file extension. Please use one of the following: ' + validExtensions.join(', '));
             }
         }
+    }
+
+    function updatePreview() {
+        const content = htmlCode.value;
+        // Update the preview iframe with the current content of the textarea
+        previewFrame.srcdoc = content;
     }
 </script>
 

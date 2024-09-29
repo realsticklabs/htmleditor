@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online HTML Editor</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #editor {
+            width: 50%;
+            padding: 10px;
+            border-right: 1px solid #ccc;
+            box-sizing: border-box;
+            height: 100%;
+            resize: none;
+        }
+        #preview {
+            width: 50%;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            font-family: monospace;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="editor">
+    <textarea id="html-code" placeholder="Write your HTML code here..."></textarea>
+</div>
+<div id="preview">
+    <h3>Preview:</h3>
+    <iframe id="output" style="width:100%; height:90%; border:none;"></iframe>
+</div>
+
+<script>
+    const htmlCode = document.getElementById('html-code');
+    const output = document.getElementById('output');
+
+    htmlCode.addEventListener('input', () => {
+        const doc = output.contentDocument || output.contentWindow.document;
+        doc.open();
+        doc.write(htmlCode.value);
+        doc.close();
+    });
+</script>
+
+</body>
+</html>
